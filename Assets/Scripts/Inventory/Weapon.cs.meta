@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 538288466449bc24b9b263c6b24e4399
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - oh_idle: {fileID: 11400000, guid: 43541a79d199eb247bbbae081d408d2e, type: 2}
+  - th_idle: {fileID: 11400000, guid: 20e37dfcf5fec1d489ca230059dc98e4, type: 2}
+  executionOrder: 0
+  icon: {fileID: 7174288486110832750, guid: 0000000000000000d000000000000000, type: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
