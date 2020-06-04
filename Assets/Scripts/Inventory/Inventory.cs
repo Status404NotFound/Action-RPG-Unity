@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace SA.Inventory
+namespace FR.Inventory
 {
     [CreateAssetMenu(menuName = "Single Instances/Inventory")]
     public class Inventory : ScriptableObject

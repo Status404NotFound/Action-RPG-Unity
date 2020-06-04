@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace SA.Scriptable
+namespace FR.Scriptable
 {
     [System.Serializable]
     public class Action

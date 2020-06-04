@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace SA.Scriptable
+namespace FR.Scriptable
 {
     [CreateAssetMenu(menuName ="Variables/String")]
     public class StringVariable : ScriptableObject

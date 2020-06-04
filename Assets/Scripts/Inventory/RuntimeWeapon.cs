@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-namespace SA.Inventory
+namespace FR.Inventory
 {
     public class RuntimeWeapon
     {

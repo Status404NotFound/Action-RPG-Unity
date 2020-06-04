@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace SA
+namespace FR
 {
     public class CameraManager : MonoBehaviour
     {
@@ -12,7 +12,7 @@ namespace SA
         public float controllerSpeed = 7;
 
         public Transform target;
-        public Transform lockonTransform;
+        public TransformVariable lockonTransform;
 
         public Transform pivot;
         public Transform camTrans;
@@ -45,6 +45,7 @@ namespace SA
             target = st.transform;
             curZ = defZ;
             mTransform = this.transform;
+            lockonTransform.value = null;
         }
 
         public void Tick(float d)
@@ -95,6 +96,37 @@ namespace SA
             {
                 smoothX = h;
                 smoothY = v;
+            }
+
+
+
+
+
+            if (lockonTransform.value != null)
+            {
+                Vector3 targetDir = lockonTransform.value.position - transform.position;
+                targetDir.Normalize();
+                targetDir.y = 0;
+
+                if (targetDir == Vector3.zero)
+                    targetDir = transform.forward;
+
+                Quaternion targetRot = Quaternion.LookRotation(targetDir);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, d * 9);
+                lookAngle = transform.eulerAngles.y;
+
+                Vector3 tiltDir = lockonTransform.value.position - pivot.position;
+                tiltDir.Normalize();
+
+                if (tiltDir == Vector3.zero)
+                    tiltDir = pivot.forward;
+
+                Quaternion tiltRot = Quaternion.LookRotation(tiltDir);
+                Vector3 tiltEuler = (Quaternion.Slerp(pivot.rotation, tiltRot, d * 9)).eulerAngles;
+                tiltEuler.y = 0;
+                tiltAngle = tiltEuler.x;
+                //pivot.localRotation = Quaternion.Euler(tiltAngle, 0, 0);
+                return;
             }
 
             lookAngle += smoothX * targetSpeed;

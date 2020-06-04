@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: Controller1
   m_EditorClassIdentifier: 
   moveSpeed: 5
-  sprintSpeed: 6
-  rotateSpeed: 5
+  rollSpeed: 7
+  backstepSpeed: 3
+  sprintSpeed: 8
+  rotateSpeed: 8

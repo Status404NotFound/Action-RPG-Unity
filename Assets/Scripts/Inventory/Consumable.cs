@@ -2,14 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace SA.Inventory
+namespace FR.Inventory
 {
     [CreateAssetMenu(menuName = "Items/Consumable")]
     public class Consumable : Item
     {
-        public Consumable()
-        {
-            type = ItemType.consumable;
-        }
+
     }
 }

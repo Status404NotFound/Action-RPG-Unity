@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using SA.Scriptable;
+using FR.Scriptable;
 
-namespace SA.Inventory
+namespace FR.Inventory
 {
     [CreateAssetMenu(menuName ="Items/Weapon")]
     public class Weapon : Item
@@ -12,11 +12,6 @@ namespace SA.Inventory
         public StringVariable th_idle;
         public GameObject modelPrefab;
         public ActionHolder[] actions;
-
-        public Weapon()
-        {
-            type = ItemType.weapon;
-        }
 
         public RightHandPosition rh_position;
         public LeftHandPosition lh_position;

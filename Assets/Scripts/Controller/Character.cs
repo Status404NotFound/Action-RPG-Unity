@@ -1,13 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using SA.Inventory;
+using FR.Inventory;
 
-namespace SA
+namespace FR
 {
     public class Character : MonoBehaviour
     {
         public CharacterBody character;
+        public InventoryData inventoryData;
 
         [System.Serializable]
         public class CharacterBody
@@ -59,16 +60,41 @@ namespace SA
             }
         }
 
-        public void Init()
+        public void InitArmor()
         {
+            for (int i = 0; i < 4; i++)
+            {
+                SkinnedMeshRenderer r = GetArmorPart((ArmorType)i);
+                SkinnedMeshRenderer b = GetBodyPart((ArmorType)i);
+                b.enabled = true;
+                r.enabled = false;
+            }
+        }
 
+        public void LoadItemsFromData()
+        {
+            if (inventoryData == null)
+                return;
+
+            InitArmor();
+
+            for (int i = 0; i < inventoryData.data.Count; i++)
+            {
+                WearItem(inventoryData.data[i]);
+            }
         }
 
         public void WearItem(Item item)
         {
+            if ((item is Armor) == false)
+            {
+                return;
+            }
+
             Armor a = (Armor)item;
             SkinnedMeshRenderer m = GetArmorPart(a.armorType);
             m.sharedMesh = a.armorMesh;
+            m.enabled = true;
 
             SkinnedMeshRenderer b = GetBodyPart(a.armorType);
             b.enabled = a.baseBodyEnabled;

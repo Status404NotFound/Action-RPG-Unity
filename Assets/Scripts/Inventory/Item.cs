@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace SA.Inventory
+namespace FR.Inventory
 {
     public class Item : ScriptableObject
     {
-        public ItemType type;
         public UI_Info ui_info;
-
         public Runtime runtime;
 
         public class Runtime

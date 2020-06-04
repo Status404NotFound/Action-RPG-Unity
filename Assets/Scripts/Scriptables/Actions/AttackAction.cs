@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace SA.Scriptable
+namespace FR.Scriptable
 {
     [CreateAssetMenu(menuName ="Actions/Attack Action")]
     public class AttackAction : ScriptableObject

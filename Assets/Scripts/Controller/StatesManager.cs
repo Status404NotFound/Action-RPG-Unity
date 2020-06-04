@@ -1,11 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using SA.Scriptable;
-using SA.Managers;
-using SA.Inventory;
+using FR.Scriptable;
+using FR.Managers;
+using FR.Inventory;
 
-namespace SA
+namespace FR
 {
     public class StatesManager : MonoBehaviour
     {
@@ -41,7 +41,7 @@ namespace SA
         public CharState charState;
         public enum CharState
         {
-            moving, onAir, armsInteracting, overrideLayerInteracting
+            moving, onAir, armsInteracting, overrideLayerInteracting, roll
         }
 
         #region Init
@@ -233,10 +233,9 @@ namespace SA
         void HandleRotation()
         {
             Vector3 targetDir = (states.isLockedOn == false) ?
-                inp.moveDir :
-                (inp.lockOnTransform == null) ?
-                inp.lockOnTransform.position - mTransform.position :
-                inp.moveDir;
+                inp.moveDir
+                :
+                inp.lockOnTransform.position - mTransform.position;
 
             targetDir.y = 0;
             if (targetDir == Vector3.zero)
@@ -303,6 +302,20 @@ namespace SA
                             ChangeState(CharState.moving);
                         }
                     }
+                    break;
+                case CharState.roll:
+                    states.animIsInteracting = anim.GetBool("isInteracting");
+                    if (states.animIsInteracting == false)
+                    {
+                        if (states.isInteracting)
+                        {
+                            states.isInteracting = false;
+                            ChangeState(CharState.moving);
+                        }
+                    }
+
+                    rigid.velocity = inp.moveDir * inp.targetRollSpeed;
+
                     break;
                 default:
                     break;
@@ -405,9 +418,12 @@ namespace SA
 
         void HandleMovementAnim()
         {
+            anim.SetBool("lockon", states.isLockedOn);
+
             if (states.isLockedOn)
             {
-
+                anim.SetFloat(StaticStrings.vertical, inp.vertical, 0.15f, delta);
+                anim.SetFloat(StaticStrings.horizontal, inp.horizontal, 0.15f, delta);
             }
             else
             {
@@ -435,9 +451,35 @@ namespace SA
                     anim.SetBool("isInteracting", true);
                     states.isInteracting = true;
                     break;
+                case CharState.roll:
+                    anim.applyRootMotion = false;
+                    anim.SetBool("isInteracting", true);
+                    states.isInteracting = true;
+                    break;
                 default:
                     break;
             }
+        }
+
+        public void HandleRoll()
+        {
+            Vector3 relativeDirection = mTransform.InverseTransformDirection(inp.moveDir);
+
+            float v = relativeDirection.z;
+            float x = relativeDirection.x;
+            inp.targetRollSpeed = stats.rollSpeed;
+
+            if (relativeDirection == Vector3.zero)
+            {
+                inp.moveDir = -mTransform.forward;
+                inp.targetRollSpeed = stats.backstepSpeed;
+            }
+
+            anim.SetFloat(StaticStrings.vertical, v);
+            anim.SetFloat(StaticStrings.horizontal, x);
+
+            PlayInteractAnimation("Rolls");
+            ChangeState(CharState.roll);
         }
         #endregion
 
@@ -524,6 +566,8 @@ namespace SA
         public bool lt;
         public bool rb;
         public bool lb;
+
+        public float targetRollSpeed;
     }
 
     [System.Serializable]

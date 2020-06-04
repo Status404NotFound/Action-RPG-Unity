@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace SA
+namespace FR
 {
     public class InputHandler : MonoBehaviour
     {
@@ -23,14 +23,23 @@ namespace SA
         float rt_axis;
         float lt_axis;
 
+        float l_thumb;
+        float r_thumb_x;
+
         float b_timer;
 
         float delta;
+        bool lockOnInput;
 
         public GamePhase curPhase;
         public StatesManager states;
         public CameraManager camManager;
         public Transform camTrans;
+        public TransformVariable lockOnTransform;
+
+        public bool isLockedOn;
+        public int enemyIndex;
+        public List<Transform> enemies = new List<Transform>();
 
         #region Init
         private void Start()
@@ -86,7 +95,9 @@ namespace SA
             Vector3 moveDir = camTrans.forward * vertical;
             moveDir += camTrans.right * horizontal;
             moveDir.Normalize();
-            states.inp.moveDir = moveDir;
+
+            if(states.charState != StatesManager.CharState.roll)
+                states.inp.moveDir = moveDir;
         }
         #endregion
 
@@ -133,19 +144,115 @@ namespace SA
             rb_input = Input.GetButton(StaticStrings.RB);
             lb_input = Input.GetButton(StaticStrings.LB);
 
+            r_thumb_x = Input.GetAxis(StaticStrings.rightAxisX);
+
             if (b_input)
                 b_timer += delta;
 
+            lockOnInput = Input.GetButtonDown(StaticStrings.L);
+
+            if (lockOnInput)
+            {
+                isLockedOn = !isLockedOn;
+                if (isLockedOn)
+                {
+                    if(enemies.Count == 0)
+                    {
+                        isLockedOn = false;
+                    }
+                    else
+                    {
+                        enemyIndex++;
+                        if (enemyIndex > enemies.Count - 1)
+                        {
+                            enemyIndex = 0;
+                        }
+                        lockOnTransform.value = enemies[enemyIndex];
+                    }
+                }
+                else
+                {
+                    lockOnTransform.value = null;
+                }
+            }
+
+            if (isLockedOn)
+            {
+                if (enemies.Count == 0)
+                {
+                    isLockedOn = false;
+                }
+                else
+                {
+                    if (r_thumb_x < -.8f || Input.GetKeyDown(KeyCode.Alpha1))
+                    {
+                        enemyIndex--;
+                        if (enemyIndex < 0)
+                        {
+                            enemyIndex = enemies.Count - 1;
+                        }
+                        lockOnTransform.value = enemies[enemyIndex];
+                    }
+                    if (r_thumb_x > .8f || Input.GetKeyDown(KeyCode.Alpha2))
+                    {
+                        enemyIndex++;
+                        if (enemyIndex > enemies.Count - 1)
+                        {
+                            enemyIndex = 0;
+                        }
+                        lockOnTransform.value = enemies[enemyIndex];
+                    }
+                }
+
+                if (lockOnTransform.value == null)
+                {
+                    isLockedOn = false;
+                }
+                else
+                {
+                    float v = Vector3.Distance(states.mTransform.position, lockOnTransform.value.position);
+                    if (v > 15)
+                    {
+                        lockOnTransform.value = null;
+                        isLockedOn = false;
+                    }
+                }
+            }
+
+            if (states.inp.lockOnTransform != lockOnTransform.value)
+            {
+                states.inp.lockOnTransform = lockOnTransform.value;
+            }
+        }
+
+        void InGame_UpdateStates_Update()
+        {
             states.inp.rb = rb_input;
             states.inp.lb = lb_input;
             states.inp.rt = rt_input;
             states.inp.lt = lt_input;
 
-        }
+            if (b_input)
+            {
+                b_timer += delta;
 
-        void InGame_UpdateStates_Update()
-        {
+                if (b_timer > 0.5f)
+                {
+                    states.states.isRunning = true;
+                }
+            }
+            else
+            {
+                if (b_timer > 0.05f && b_timer < 0.5f)
+                {
+                    states.HandleRoll();
+                }
+                b_timer = 0;
 
+                states.states.isRunning = false;
+            }
+
+            states.states.isLockedOn = isLockedOn;
         }
         #endregion
     }
